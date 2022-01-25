@@ -31,6 +31,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sample/member").hasRole("USER");
 
         http.formLogin(); // 3) 인증에 문제가 있을 경우 login 페이지로 이동.
+
+        // csrf 토큰 해제.
+        // 사용자 요청을 위조하여 특정 페이지의 보안을 무력화 시키는 것을 방지하기 위해 임의의 값인 csrf 토큰을 만들어 발행한다.
+        // form 태그에는 보안상 권장되나, REST 방식에서 매번 이 값을 알아야 하기 때문에 불편할 수 있다.
+        http.csrf().disable();
+
+        // 기본 제공되는 logout 페이지.
+        http.logout();
     }
 
     @Override
