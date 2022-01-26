@@ -41,13 +41,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication().withUser("user1") // 작성할 user id.
-                .password("$2a$10$Cdvv0/zRe01SZN9U1fVXw.GMld3k8cCRTzUzYQIaqhxeWEJF6rtq6") // test 에서 1111을 인코딩한 결과.
-                .roles("USER"); // 이 아이디의 권한.
-    }
+    // SecAuthMemberDTO 와 SecUserDetailService 가 이하 AuthenticationManagerBuilder 의 역할을 대신하므로 더 이상 필요없다.
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//
+//        auth.inMemoryAuthentication().withUser("user1") // 작성할 user id.
+//                .password("$2a$10$Cdvv0/zRe01SZN9U1fVXw.GMld3k8cCRTzUzYQIaqhxeWEJF6rtq6") // test 에서 1111을 인코딩한 결과.
+//                .roles("USER"); // 이 아이디의 권한.
+//    }
 
 
 }
