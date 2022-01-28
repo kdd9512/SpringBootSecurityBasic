@@ -31,8 +31,9 @@ dependencies {
     // thymeleaf-extras-java8time
     implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time'
 
-    // spring-security-oauth2 google oauth 를 이용하기 위해 필요한 implement.
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-security'
+    // spring-security-oauth2 oauth2 를 이용하기 위해 필요한 implements. 비슷한 이름을 가진 implements 가 많으므로 주의할 것.
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

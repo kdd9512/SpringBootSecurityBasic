@@ -37,6 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // form 태그에는 보안상 권장되나, REST 방식에서 매번 이 값을 알아야 하기 때문에 불편할 수 있다.
         http.csrf().disable();
 
+        // oauth2 를 이용하여 login. google 로그인을 이용한다.
+        http.oauth2Login();
+
         // 기본 제공되는 logout 페이지.
         http.logout();
     }
