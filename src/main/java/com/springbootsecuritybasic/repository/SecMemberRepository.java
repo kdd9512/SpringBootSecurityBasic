@@ -12,4 +12,5 @@ public interface SecMemberRepository extends JpaRepository<SecMemberEntity, Stri
     @EntityGraph(attributePaths = {"roleSet"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select m from SecMemberEntity m where m.fromSocial = :social and m.email = :email")
     Optional<SecMemberEntity> findByEmail(String email, boolean social);
+
 }
