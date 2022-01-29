@@ -3,8 +3,10 @@ package com.springbootsecuritybasic.security.service;
 import com.springbootsecuritybasic.entity.SecMemberEntity;
 import com.springbootsecuritybasic.entity.SecMemberRoleEntity;
 import com.springbootsecuritybasic.repository.SecMemberRepository;
+import com.springbootsecuritybasic.security.dto.SecAuthMemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -13,6 +15,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -22,9 +25,9 @@ public class SecOAuth2UserDetailsService extends DefaultOAuth2UserService {
     private final SecMemberRepository repository;
     private final PasswordEncoder pwEncoder;
 
-    private SecMemberEntity saveSocialMember(String email){
+    private SecMemberEntity saveSocialMember(String email) {
         // 기존에 동일 email 로 가입한 회원이 있는 경우에는 조회만 실시.
-        Optional<SecMemberEntity> result = repository.findByEmail(email,true);
+        Optional<SecMemberEntity> result = repository.findByEmail(email, true);
 
         if (result.isPresent()) {
             return result.get();
@@ -72,7 +75,19 @@ public class SecOAuth2UserDetailsService extends DefaultOAuth2UserService {
 
         SecMemberEntity member = saveSocialMember(email);
 
-        return oAuth2User;
+        SecAuthMemberDTO authMember = new SecAuthMemberDTO(
+                member.getEmail(),
+                member.getPassword(),
+                true,
+                member.getRoleSet().stream().map(role ->
+                        new SimpleGrantedAuthority("ROLE_" + role.name())
+                ).collect(Collectors.toList()),
+                oAuth2User.getAttributes()
+        );
+
+        authMember.setName(member.getName());
+
+        return authMember;
 
     }
 }
