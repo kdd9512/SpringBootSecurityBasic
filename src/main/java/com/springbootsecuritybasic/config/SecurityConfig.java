@@ -1,11 +1,12 @@
 package com.springbootsecuritybasic.config;
 
+import com.springbootsecuritybasic.security.handler.LoginSuccessHandler;
+import com.springbootsecuritybasic.security.service.SecUserDetailsService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @Log4j2
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private SecUserDetailsService userDetailsService;
 
     // 비밀번호 암호화를 위한 PasswordEncoder. Boot 2.0 이상부터 반드시 사용해야 한다.
     @Bean
@@ -37,11 +41,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // form 태그에는 보안상 권장되나, REST 방식에서 매번 이 값을 알아야 하기 때문에 불편할 수 있다.
         http.csrf().disable();
 
-        // oauth2 를 이용하여 login. google 로그인을 이용한다.
-        http.oauth2Login();
-
         // 기본 제공되는 logout 페이지.
         http.logout();
+
+        // oauth2 를 이용하여 login. google 로그인을 이용한다.
+        http.oauth2Login().successHandler(successHandler());
+
+        // 자동로그인 지정. 지정한 기간은 1주일.
+        http.rememberMe().tokenValiditySeconds(60*60*7).userDetailsService(userDetailsService);
+
+
+    }
+
+    @Bean
+    public LoginSuccessHandler successHandler() {
+        return new LoginSuccessHandler(passwordEncoder());
     }
 
     // SecAuthMemberDTO 와 SecUserDetailService 가 이하 AuthenticationManagerBuilder 의 역할을 대신하므로 더 이상 필요없다.

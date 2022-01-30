@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service // 자동으로 spring 에서 bean 으로 처리되게 하기 위한 annotation.
 @RequiredArgsConstructor // 초기화되지 않은 final 필드나 @NonNull 필드에 생성자를 생성. 의존성 주입을 하려면 이하의 final 처리와 함께 필수.
-public class SecUserDetailService implements UserDetailsService {
+public class SecUserDetailsService implements UserDetailsService {
 
     private final SecMemberRepository memberRepository; // SecMemberRepository 를 주입받음. final 필수.
 
