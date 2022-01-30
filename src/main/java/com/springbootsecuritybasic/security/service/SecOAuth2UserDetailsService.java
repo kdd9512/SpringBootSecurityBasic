@@ -25,28 +25,6 @@ public class SecOAuth2UserDetailsService extends DefaultOAuth2UserService {
     private final SecMemberRepository repository;
     private final PasswordEncoder pwEncoder;
 
-    private SecMemberEntity saveSocialMember(String email) {
-        // 기존에 동일 email 로 가입한 회원이 있는 경우에는 조회만 실시.
-        Optional<SecMemberEntity> result = repository.findByEmail(email, true);
-
-        if (result.isPresent()) {
-            return result.get();
-        }
-
-        // 없는 경우, 이름을 email 로 / 비밀번호 1111 로 신규회원 가입.
-        SecMemberEntity member = SecMemberEntity.builder().email(email)
-                .name(email)
-                .password(pwEncoder.encode("1111"))
-                .fromSocial(true)
-                .build();
-
-        member.addMemberRole(SecMemberRoleEntity.USER);
-
-        repository.save(member);
-
-        return member;
-    }
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
@@ -90,4 +68,27 @@ public class SecOAuth2UserDetailsService extends DefaultOAuth2UserService {
         return authMember;
 
     }
+
+    private SecMemberEntity saveSocialMember(String email) {
+        // 기존에 동일 email 로 가입한 회원이 있는 경우에는 조회만 실시.
+        Optional<SecMemberEntity> result = repository.findByEmail(email, true);
+
+        if (result.isPresent()) {
+            return result.get();
+        }
+
+        // 없는 경우, 이름을 email 로 / 비밀번호 1111 로 신규회원 가입.
+        SecMemberEntity member = SecMemberEntity.builder().email(email)
+                .name(email)
+                .password(pwEncoder.encode("1111"))
+                .fromSocial(true)
+                .build();
+
+        member.addMemberRole(SecMemberRoleEntity.USER);
+
+        repository.save(member);
+
+        return member;
+    }
+
 }

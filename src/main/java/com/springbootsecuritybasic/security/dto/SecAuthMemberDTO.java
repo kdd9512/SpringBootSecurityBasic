@@ -43,6 +43,7 @@ public class SecAuthMemberDTO extends User implements OAuth2User {
     ) {
         super(username, password, auth);
         this.email = username;
+        this.password = password;
         this.fromSocial = fromSocial;
     }
 
