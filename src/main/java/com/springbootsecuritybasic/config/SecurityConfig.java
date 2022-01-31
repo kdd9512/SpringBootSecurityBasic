@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @Log4j2
+// 어노테이션 기반의 접근제한을 설정.
+// securedEnabled : 이전 버전의 @Secure annotation 의 사용가능 여부 설정
+// prePostEnabled : @PreAuthorize annotation 의 사용가능 여부 결정.
+// @PreAuthorize 는 controller 에 annotation 을 직접 설정하여 접근제한 조건을 부여한다.
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -30,9 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 1) .antMatchers().permitAll() : 해당 페이지는 로그인 없이 모든 사용자에게 개방.
         // 정확히는 로그인이 없더라도 익명의 사용자로 취급하여 페이지를 개방함.
         // 2) .antMatchers().hasRole("user의 권한명") : 권한명과 일치하는 권한을 가진 유저만 접근가능.
-        http.authorizeRequests()
-                .antMatchers("/sample/all").permitAll()
-                .antMatchers("/sample/member").hasRole("USER");
+//        http.authorizeRequests()
+//                .antMatchers("/sample/all").permitAll()
+//                .antMatchers("/sample/member").hasRole("USER");
 
         http.formLogin(); // 3) 인증에 문제가 있을 경우 login 페이지로 이동.
 
