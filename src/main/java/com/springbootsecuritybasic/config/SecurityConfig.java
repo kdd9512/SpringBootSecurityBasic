@@ -1,5 +1,7 @@
 package com.springbootsecuritybasic.config;
 
+import com.springbootsecuritybasic.security.filter.ApiCheckFilter;
+import com.springbootsecuritybasic.security.filter.ApiLoginFilter;
 import com.springbootsecuritybasic.security.handler.LoginSuccessHandler;
 import com.springbootsecuritybasic.security.service.SecUserDetailsService;
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @Log4j2
@@ -56,6 +59,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 자동로그인 지정. 지정한 기간은 1주일.
         http.rememberMe().tokenValiditySeconds(60*60*7).userDetailsService(userDetailsService);
 
+        // Filter 는 보통 가장 마지막에 동작하나, 이하의 addFilterBefore 로 순서를 조절할 수 있다.
+        http.addFilterBefore(apiCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(apiLoginFilter(), UsernamePasswordAuthenticationFilter.class);
+
 
     }
 
@@ -72,6 +79,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .password("$2a$10$Cdvv0/zRe01SZN9U1fVXw.GMld3k8cCRTzUzYQIaqhxeWEJF6rtq6") // test 에서 1111을 인코딩한 결과.
 //                .roles("USER"); // 이 아이디의 권한.
 //    }
+
+    // API 서버를 위한 filter.
+    @Bean
+    public ApiCheckFilter apiCheckFilter(){
+        return new ApiCheckFilter("/notes/**/*");
+    }
+
+    // 로그인 여부를 감지하는 filter.
+    @Bean
+    public ApiLoginFilter apiLoginFilter() throws Exception{
+
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login");
+        apiLoginFilter.setAuthenticationManager(authenticationManager());
+
+        return apiLoginFilter;
+    }
+
 
 
 }

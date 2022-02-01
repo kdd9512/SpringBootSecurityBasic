@@ -5,11 +5,11 @@ import com.springbootsecuritybasic.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Log4j2
@@ -28,6 +28,48 @@ public class NoteController {
         Long num = service.register(noteDTO);
 
         return new ResponseEntity<>(num, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{num}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<NoteDTO> read(@PathVariable("num") Long num){
+
+        log.info("===============================read======================================");
+        log.info("num? : " + num);
+
+        return new ResponseEntity<>(service.get(num), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<NoteDTO>> getList(String email) {
+
+        log.info("===============================getList======================================");
+        log.info("getList email : " + email);
+
+        return new ResponseEntity<>(service.getAllWithWriter(email), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/{num}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> remove(@PathVariable("num") Long num){
+
+        log.info("=====================================delete=========================================");
+        log.info("deleted num : " + num);
+
+        service.remove(num);
+
+        return new ResponseEntity<>("removed", HttpStatus.OK);
+
+    }
+
+    @PutMapping(value = "/{num}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> modify(@RequestBody NoteDTO noteDTO) {
+
+        log.info("=================================modify=================================");
+        log.info("modify noteDTO : " + noteDTO);
+
+        service.modify(noteDTO);
+
+        return new ResponseEntity<>("modified", HttpStatus.OK);
+
     }
 
 }
