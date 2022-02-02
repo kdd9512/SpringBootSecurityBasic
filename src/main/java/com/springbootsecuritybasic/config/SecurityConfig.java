@@ -2,6 +2,7 @@ package com.springbootsecuritybasic.config;
 
 import com.springbootsecuritybasic.security.filter.ApiCheckFilter;
 import com.springbootsecuritybasic.security.filter.ApiLoginFilter;
+import com.springbootsecuritybasic.security.handler.ApiLoginFailHandler;
 import com.springbootsecuritybasic.security.handler.LoginSuccessHandler;
 import com.springbootsecuritybasic.security.service.SecUserDetailsService;
 import lombok.extern.log4j.Log4j2;
@@ -93,9 +94,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login");
         apiLoginFilter.setAuthenticationManager(authenticationManager());
 
+        apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler()); // login 실패 처리.
+
         return apiLoginFilter;
     }
-
-
 
 }

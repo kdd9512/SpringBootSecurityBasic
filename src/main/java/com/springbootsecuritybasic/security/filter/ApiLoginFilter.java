@@ -2,10 +2,12 @@ package com.springbootsecuritybasic.security.filter;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +26,20 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("==========================ApiLoginFilter==========================");
 
         String email = req.getParameter("email");
-        String pw = "1111";
+        String pw = req.getParameter("pw");
 
-        if (email == null) {
-            throw new BadCredentialsException("email cannot be null");
-        }
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(email, pw);
 
-        return null;
+        return getAuthenticationManager().authenticate(authToken);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse resp,
+                                            FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        log.info("==========================ApiLoginFilter==========================");
+        log.info("successfulAuthentication : " + authResult);
+
+        log.info(authResult.getPrincipal());
     }
 }
