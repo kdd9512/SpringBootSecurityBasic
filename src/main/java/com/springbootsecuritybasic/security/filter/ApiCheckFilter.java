@@ -1,5 +1,6 @@
 package com.springbootsecuritybasic.security.filter;
 
+import com.springbootsecuritybasic.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONObject;
 import org.springframework.util.AntPathMatcher;
@@ -18,10 +19,12 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
     private AntPathMatcher antPathMatcher;
     private String pattern;
+    private JWTUtil jwtUtil;
 
-    public ApiCheckFilter(String pattern) {
+    public ApiCheckFilter(String pattern, JWTUtil jwtUtil) {
         this.antPathMatcher = new AntPathMatcher();
         this.pattern = pattern;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -65,10 +68,17 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
         String authHeader = req.getHeader("Authorization");
 
-        if (StringUtils.hasText(authHeader)) {
+        // Authorization 의 헤더는 일반적으로 Basic 을 사용되나, JWT 를 이용하는 경우, Bearer 를 사용한다.
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
             log.info("Authorization exist? : " + authHeader);
-            if (authHeader.equals("12345678")) {
-                checkResult = true;
+
+            try {
+                String email = jwtUtil.validateAndExtract(authHeader.substring(7));
+                log.info("validate result : " + email);
+                checkResult = email.length() > 0;
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }

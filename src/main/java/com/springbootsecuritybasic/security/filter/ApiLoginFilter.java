@@ -1,5 +1,7 @@
 package com.springbootsecuritybasic.security.filter;
 
+import com.springbootsecuritybasic.security.dto.SecAuthMemberDTO;
+import com.springbootsecuritybasic.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,8 +18,11 @@ import java.io.IOException;
 @Log4j2
 public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    public ApiLoginFilter(String defaultFilterProcessUrl) {
+    private JWTUtil jwtUtil;
+
+    public ApiLoginFilter(String defaultFilterProcessUrl, JWTUtil jwtUtil) {
         super(defaultFilterProcessUrl);
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -41,5 +46,21 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("successfulAuthentication : " + authResult);
 
         log.info(authResult.getPrincipal());
+
+        // email
+        String email = ((SecAuthMemberDTO)authResult.getPrincipal()).getUsername();
+
+        String token = null;
+        try {
+            token = jwtUtil.generateToken(email);
+
+            resp.setContentType("text/plain");
+            resp.getOutputStream().write(token.getBytes());
+
+            log.info(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

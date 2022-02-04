@@ -5,6 +5,7 @@ import com.springbootsecuritybasic.security.filter.ApiLoginFilter;
 import com.springbootsecuritybasic.security.handler.ApiLoginFailHandler;
 import com.springbootsecuritybasic.security.handler.LoginSuccessHandler;
 import com.springbootsecuritybasic.security.service.SecUserDetailsService;
+import com.springbootsecuritybasic.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -81,17 +82,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .roles("USER"); // 이 아이디의 권한.
 //    }
 
+
+    // JWT 를 이용하기 위한 Bean
+    @Bean
+    public JWTUtil jwtUtil(){
+        return new JWTUtil();
+    }
+
     // API 서버를 위한 filter.
     @Bean
     public ApiCheckFilter apiCheckFilter(){
-        return new ApiCheckFilter("/notes/**/*");
+        return new ApiCheckFilter("/notes/**/*", jwtUtil());
     }
+
 
     // 로그인 여부를 감지하는 filter.
     @Bean
     public ApiLoginFilter apiLoginFilter() throws Exception{
 
-        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login");
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login", jwtUtil());
         apiLoginFilter.setAuthenticationManager(authenticationManager());
 
         apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler()); // login 실패 처리.

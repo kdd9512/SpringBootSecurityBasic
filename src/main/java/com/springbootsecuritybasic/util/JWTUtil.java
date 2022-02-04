@@ -22,7 +22,8 @@ public class JWTUtil {
         return Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(ZonedDateTime.now()
-                        .plusMinutes(expire).toInstant()))
+                        .plusMinutes(expire).toInstant())) // JWT 만료기한 설정.
+//                .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(1).toInstant())) // JWT 만료기한을 1초로 설정.
                 .claim("sub", content)
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes(StandardCharsets.UTF_8))
                 .compact();
